@@ -9,10 +9,15 @@ env:
 matrix:
   include:
   - os: linux
-    dist: trusty
+    dist: xenial
     compiler: gcc
     env:
     - MY_CPATH=cybozulib/include
+    - MY_TARGET_DIST=ubuntu:18.04
+  - os: linux
+    dist: xenial
+    language: python
+    env:
     - MY_TARGET_DIST=ubuntu:18.04
 before_install:
 - env
