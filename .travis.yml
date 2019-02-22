@@ -30,6 +30,9 @@ before_script:
 - docker exec -ti $MY_NAME bash -c "$CXX --version"
 
 script:
+- docher exec -ti $MY_NAME bash -c "ls -la"
+- docher exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; ls -la"
+- docher exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; git clone https://github.com/herumi/cybozulib.git"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; make CXX=$CXX"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; make check"
 
