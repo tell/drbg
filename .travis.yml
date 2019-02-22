@@ -23,7 +23,8 @@ install:
 - docker exec -ti $MY_NAME bash -c "apt update" > /dev/null
 - docker exec -ti $MY_NAME bash -c "apt install -y build-essential git pkg-config" > /dev/null
 - docker exec -ti $MY_NAME bash -c "apt install -y time" > /dev/null
-- docker exec -ti $MY_NAME bash -c "apt install -y libsodium-dev"
+- docker exec -ti $MY_NAME bash -c "apt install -y libsodium-dev" > /dev/null
+- docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; git clone https://github.com/herumi/cybozulib.git" > /dev/null
 
 before_script:
 - docker exec -ti $MY_NAME bash -c "$CC --version"
@@ -32,7 +33,6 @@ before_script:
 script:
 # - docker exec -ti $MY_NAME bash -c "ls -la"
 # - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; ls -la"
-- docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; git clone https://github.com/herumi/cybozulib.git"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; make CXX=$CXX"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; make check"
 
