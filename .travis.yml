@@ -21,8 +21,9 @@ before_install:
 
 install:
 - docker exec -ti $MY_NAME bash -c "apt update" > /dev/null
-- docker exec -ti $MY_NAME bash -c "apt install -y build-essential git time" > /dev/null
-- docker exec -ti $MY_NAME bash -c "apt install -y libgmp-dev" > /dev/null
+- docker exec -ti $MY_NAME bash -c "apt install -y build-essential git pkg-config" > /dev/null
+- docker exec -ti $MY_NAME bash -c "apt install -y time" > /dev/null
+- docker exec -ti $MY_NAME bash -c "apt install -y libsodium" > /dev/null
 
 before_script:
 - docker exec -ti $MY_NAME bash -c "$CC --version"
