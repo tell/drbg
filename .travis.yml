@@ -25,11 +25,10 @@ install:
 - docker exec -ti $MY_NAME bash -c "apt install -y python3-pytest" > /dev/null
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; git clone https://github.com/herumi/cybozulib.git" > /dev/null
 before_script:
+- docker exec -ti $MY_NAME bash -c "env"
 - docker exec -ti $MY_NAME bash -c "$CC --version"
 - docker exec -ti $MY_NAME bash -c "$CXX --version"
 script:
-# - docker exec -ti $MY_NAME bash -c "ls -la"
-# - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; ls -la"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; env CPATH=$MY_CPATH make CXX=$CXX"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; make check"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; py.test-3"
