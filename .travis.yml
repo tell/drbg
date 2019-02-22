@@ -32,6 +32,7 @@ script:
 # - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; ls -la"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; env CPATH=$MY_CPATH make CXX=$CXX"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; make check"
+- docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; py.test-3"
 # after_failure:
 # - tail -n 1000 make.log
 notifications:
