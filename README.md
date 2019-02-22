@@ -4,5 +4,5 @@ This is an implementation of deterministic random bit generation using [libsodiu
 
 # Note
 
-This is an experimental implementation, be careful when you use.
+This is an experimental implementation, be careful when you use. Validity of this implementation is not checked so much.
 
