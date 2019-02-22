@@ -1,7 +1,7 @@
 CC = $(CXX)
 CXX = clang++
 CPPFLAGS += -g3 -MMD -MP -MF .dep/$(basename $(notdir $@)).d
-CPPFLAGS += $(shell pkg-config --cflags libsodium) -Icybozulib/include
+CPPFLAGS += $(shell pkg-config --cflags libsodium)
 CXXFLAGS += -O2 -std=c++17 -Wall -Wextra
 LDFLAGS += -g3
 LOADLIBES += $(shell pkg-config --libs libsodium)

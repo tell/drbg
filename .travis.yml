@@ -6,6 +6,7 @@ env:
   global:
   - MY_NAME=travis-ci
   - MY_TARGET_MOUNT=/tell/sodium-drbg
+  - MY_CPATH=cybozulib/include
 matrix:
   include:
   - os: linux
@@ -29,7 +30,7 @@ before_script:
 script:
 # - docker exec -ti $MY_NAME bash -c "ls -la"
 # - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; ls -la"
-- docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; make CXX=$CXX"
+- docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; env CPATH=$MY_CPATH make CXX=$CXX"
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; make check"
 # after_failure:
 # - tail -n 1000 make.log
