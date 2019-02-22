@@ -24,13 +24,12 @@ before_install:
 - env
 - docker pull $MY_TARGET_DIST
 - docker run --name $MY_NAME -v $TRAVIS_BUILD_DIR:$MY_TARGET_MOUNT -td $MY_TARGET_DIST /bin/bash
-- docker exec -ti $MY_NAME bash -c "ls -la"
 - docker exec -ti $MY_NAME bash -c "apt update" > /dev/null
 install:
 - docker exec -ti $MY_NAME bash -c "apt install -y build-essential git pkg-config wget" > /dev/null
 - docker exec -ti $MY_NAME bash -c "apt install -y time" > /dev/null
 # - docker exec -ti $MY_NAME bash -c "apt install -y libsodium-dev" > /dev/null
-- docker exec -ti $MY_NAME bash -c "wget https://github.com/jedisct1/libsodium/releases/download/1.0.17/libsodium-1.0.17.tar.gz; tar xf libsodium-1.0.17.tar.gz; cd libsodium-1.0.17; ./configure; make -j; make -j install"
+- docker exec -ti $MY_NAME bash -c "wget https://github.com/jedisct1/libsodium/releases/download/1.0.17/libsodium-1.0.17.tar.gz; tar xf libsodium-1.0.17.tar.gz; cd libsodium-1.0.17; ./configure; make -j; make -j install" > /dev/null
 - docker exec -ti $MY_NAME bash -c "apt install -y python3-pytest" > /dev/null
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; git clone https://github.com/herumi/cybozulib.git" > /dev/null
 before_script:
