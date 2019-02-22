@@ -1,5 +1,7 @@
 # sodium-drbg
 
+[![Build Status](https://travis-ci.org/tell/sodium-drbg.svg?branch=master)](https://travis-ci.org/tell/sodium-drbg)
+
 This is an implementation of deterministic random bit generation using [libsodium](https://github.com/jedisct1/libsodium).
 
 # Note
