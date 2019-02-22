@@ -1,5 +1,7 @@
 # sodium-drbg
 
+This is an implementation of deterministic random bit generation using [libsodium](https://github.com/jedisct1/libsodium).
+
 # Note
 
 This is an experimental implementation, be careful when you use.
