@@ -21,6 +21,7 @@ install:
 - docker exec -ti $MY_NAME bash -c "apt install -y build-essential git pkg-config" > /dev/null
 - docker exec -ti $MY_NAME bash -c "apt install -y time" > /dev/null
 - docker exec -ti $MY_NAME bash -c "apt install -y libsodium-dev" > /dev/null
+- docker exec -ti $MY_NAME bash -c "apt install -y python3-pytest" > /dev/null
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; git clone https://github.com/herumi/cybozulib.git" > /dev/null
 before_script:
 - docker exec -ti $MY_NAME bash -c "$CC --version"
