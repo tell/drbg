@@ -23,6 +23,7 @@ install:
 - docker exec -ti $MY_NAME bash -c "apt update" > /dev/null
 - docker exec -ti $MY_NAME bash -c "apt install -y build-essential" > /dev/null
 - docker exec -ti $MY_NAME bash -c "apt install -y libgmp-dev" > /dev/null
+- docker exec -ti $MY_NAME bash -c "apt install -y time" > /dev/null
 
 before_script:
 - docker exec -ti $MY_NAME bash -c "$CC --version"
