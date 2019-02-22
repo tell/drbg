@@ -1,6 +1,6 @@
 import ctypes
 import ctypes.util
-sodium = ctypes.cdll.LoadLibrary(ctypes.util.find_library('libsodium'))
+sodium = ctypes.cdll.LoadLibrary(ctypes.util.find_library('sodium'))
 keybytes = sodium.crypto_kdf_keybytes()
 ctxbytes = sodium.crypto_kdf_contextbytes()
 seedbytes = sodium.randombytes_seedbytes()
