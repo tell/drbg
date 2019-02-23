@@ -1,4 +1,4 @@
-# sodium-drbg
+# Deterministic Random Bytes Generation
 
 [![Build Status](https://travis-ci.org/tell/sodium-drbg.svg?branch=master)](https://travis-ci.org/tell/sodium-drbg)
 
