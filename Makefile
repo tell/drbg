@@ -26,13 +26,13 @@ LOADLIBES += $(shell pkg-config --libs libsodium)
 .dep:
 	mkdir -p $@
 .PHONY: do
-do: .dep test.out
+do: .dep test_sodium_drbg.out
 .PHONY: clean
 clean:
 	$(RM) *.o *.out
 .PHONY: check
 check:
-	time ./test.out
+	time ./test_sodium_drbg.out
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(shell ls .dep/*.d)
