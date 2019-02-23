@@ -34,12 +34,12 @@ install:
 - docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; git clone https://github.com/herumi/cybozulib.git" > /dev/null
 before_script:
 - docker exec -ti $MY_NAME bash -c "env"
-- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "$CC --version"; fi
-- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "$CXX --version"; fi
+- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "$CC --version"; else echo skip; fi
+- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "$CXX --version"; else echo skip; fi
 script:
-- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT; env CPATH=$MY_CPATH make CXX=$CXX"; fi
-- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT; make check"; fi
-- if [ "python" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT; py.test-3"; fi
+- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT; env CPATH=$MY_CPATH make CXX=$CXX"; else echo skip; fi
+- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT; make check"; else echo skip; fi
+- if [ "python" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT; py.test-3"; else echo skip; fi
 # after_failure:
 # - tail -n 1000 make.log
 notifications:
