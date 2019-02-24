@@ -13,9 +13,7 @@ class KeyedCtrDRBG(object):
         ctxl = ','.join(['0x{:02x}'.format(int.from_bytes(x, 'little')) for x in self.ctx])
         return '{{[{}]:[{}]}}'.format(keyl, ctxl)
     def setRandomKey(self):
-        key = (ctypes.c_uint8 * keybytes)()
-        sodium.crypto_kdf_keygen(key)
-        self.key = key
+        sodium.crypto_kdf_keygen(self.key)
     def genSeedByInputScalar(self, s):
         seed = (ctypes.c_ubyte * seedbytes)()
         subkey_id = ctypes.c_uint64(s)
