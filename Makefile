@@ -33,6 +33,10 @@ clean:
 .PHONY: check
 check:
 	time ./test_sodium_drbg.out
+.PHONY: indent
+indent:
+	which $(CLANG_FORMAT)
+	git ls-files | grep -i '\.[ch]pp' | xargs -n 1 $(CLANG_FORMAT) -style=file -i
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(shell ls .dep/*.d)
