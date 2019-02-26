@@ -9,10 +9,7 @@
 
 #include <sodium.h>
 
-#define my_static_assert(x) static_assert((x), #x);
-
 namespace tool {
-
 template <class T>
 inline std::string to_hex(const T &x, const std::string &delim = ",") { // {{{
     size_t len = x.size();
@@ -51,7 +48,7 @@ public:
         return key;
     } // }}}
     static void setRandomKey(keyed_ctr_drbg &x) { x.key_ = randomKey(); }
-    keyed_ctr_drbg(const key_t &key, const ctx_t &ctx = {0})
+    explicit keyed_ctr_drbg(const key_t &key, const ctx_t &ctx = {0})
         : key_(key), ctx_(ctx) {}
     keyed_ctr_drbg() : keyed_ctr_drbg({0}) {}
     friend std::ostream &operator<<(std::ostream &o,
