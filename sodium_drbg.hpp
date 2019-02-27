@@ -27,7 +27,7 @@ inline std::string to_hex(const T &x, const std::string &delim = ",") { // {{{
     s << "}";
     return s.str();
 } // }}}
-class keyed_ctr_drbg { // {{{
+class KeyedCtrDRBG_Sodium { // {{{
 public:
     constexpr static auto keybytes = crypto_kdf_KEYBYTES;
     constexpr static auto ctxbytes = crypto_kdf_CONTEXTBYTES;
@@ -47,12 +47,12 @@ public:
         crypto_kdf_keygen(key.data());
         return key;
     } // }}}
-    static void setRandomKey(keyed_ctr_drbg &x) { x.key_ = randomKey(); }
-    explicit keyed_ctr_drbg(const key_t &key, const ctx_t &ctx = {0})
-        : key_(key), ctx_(ctx) {}
-    keyed_ctr_drbg() : keyed_ctr_drbg({0}) {}
+    static void setRandomKey(KeyedCtrDRBG_Sodium &x) { x.key_ = randomKey(); }
+    explicit KeyedCtrDRBG_Sodium(const key_t &key, const ctx_t &ctx) : key_(key), ctx_(ctx) {}
+    explicit KeyedCtrDRBG_Sodium(const key_t &key) : KeyedCtrDRBG_Sodium(key, {0}) {}
+    explicit KeyedCtrDRBG_Sodium() : KeyedCtrDRBG_Sodium({0}) {}
     friend std::ostream &operator<<(std::ostream &o,
-                                    const keyed_ctr_drbg &x) { // {{{
+                                    const KeyedCtrDRBG_Sodium &x) { // {{{
         constexpr size_t len = keybytes;
         assert(len > 0);
         std::stringstream s;
