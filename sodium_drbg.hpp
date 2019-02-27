@@ -48,8 +48,10 @@ public:
         return key;
     } // }}}
     static void setRandomKey(KeyedCtrDRBG_Sodium &x) { x.key_ = randomKey(); }
-    explicit KeyedCtrDRBG_Sodium(const key_t &key, const ctx_t &ctx) : key_(key), ctx_(ctx) {}
-    explicit KeyedCtrDRBG_Sodium(const key_t &key) : KeyedCtrDRBG_Sodium(key, {0}) {}
+    explicit KeyedCtrDRBG_Sodium(const key_t &key, const ctx_t &ctx)
+        : key_(key), ctx_(ctx) {}
+    explicit KeyedCtrDRBG_Sodium(const key_t &key)
+        : KeyedCtrDRBG_Sodium(key, {0}) {}
     explicit KeyedCtrDRBG_Sodium() : KeyedCtrDRBG_Sodium({0}) {}
     friend std::ostream &operator<<(std::ostream &o,
                                     const KeyedCtrDRBG_Sodium &x) { // {{{

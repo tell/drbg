@@ -15,10 +15,10 @@ CYBOZU_TEST_AUTO(print_info_sodium) { // {{{
     cout << "libsodium: minor version = " << minor << endl;
     cout << "libsodium: crypto_kdf_KEYBYTES = " << KeyedCtrDRBG_Sodium::keybytes
          << endl;
-    cout << "libsodium: crypto_kdf_CONTEXTBYTES = " << KeyedCtrDRBG_Sodium::ctxbytes
-         << endl;
-    cout << "libsodium: randombytes_SEEDBYTES = " << KeyedCtrDRBG_Sodium::seedbytes
-         << endl;
+    cout << "libsodium: crypto_kdf_CONTEXTBYTES = "
+         << KeyedCtrDRBG_Sodium::ctxbytes << endl;
+    cout << "libsodium: randombytes_SEEDBYTES = "
+         << KeyedCtrDRBG_Sodium::seedbytes << endl;
 } // }}}
 CYBOZU_TEST_AUTO(test_KeyedCtrDRBG_Sodium) { // {{{
     for (size_t j = 0; j < 10; j++) {
