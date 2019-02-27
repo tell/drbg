@@ -66,7 +66,7 @@ public:
     const ctx_t &getCtx() const { return ctx_; }
 
 public:
-    uint32_t getUInt32(const uint32_t ctr = 0) { // {{{
+    uint32_t getUInt32(const uint32_t ctr) const { // {{{
         seed_t seed;
         crypto_kdf_derive_from_key(seed.data(), seed.size(), ctr, ctx_.data(),
                                    key_.data());
@@ -79,7 +79,7 @@ public:
                        (static_cast<uint32_t>(out[3]) << (8 * 3));
         return ret;
     } // }}}
-    uint64_t getUInt64(const uint64_t ctr = 0) { // {{{
+    uint64_t getUInt64(const uint64_t ctr) const { // {{{
         seed_t seed;
         crypto_kdf_derive_from_key(seed.data(), seed.size(), ctr, ctx_.data(),
                                    key_.data());
@@ -96,7 +96,7 @@ public:
                        (static_cast<uint64_t>(out[7]) << (8 * 7));
         return ret;
     } // }}}
-    void getBytes(buff_t &out, const uint64_t ctr = 0) { // {{{
+    void getBytes(buff_t &out, const uint64_t ctr) const { // {{{
         seed_t seed;
         crypto_kdf_derive_from_key(seed.data(), seed.size(), ctr, ctx_.data(),
                                    key_.data());
