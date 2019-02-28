@@ -28,7 +28,7 @@ LOADLIBES += $(shell pkg-config --libs openssl)
 .dep:
 	mkdir -p $@
 .PHONY: do
-do: .dep test_sodium_drbg.out test_openssl_aes_drbg.out
+do: .dep $(addprefix test_sodium_drbg,.out _adr.out) $(addprefix test_openssl_aes_drbg,.out _adr.out)
 .PHONY: clean
 clean:
 	$(RM) *.o *.out

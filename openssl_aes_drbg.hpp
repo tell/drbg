@@ -79,7 +79,7 @@ public:
         : ci_(getCipher(size)), size_(size), key_(key) { // {{{
         assert(ci_ != nullptr);
         const auto keysize = EVP_CIPHER_key_length(ci_);
-        assert(keysize == key_.size());
+        assert(size_t(keysize) == key_.size());
     } // }}}
     explicit KeyedCtrDRBG_AES(const KeySize size)
         : ci_(getCipher(size)), size_(size), key_({}) { // {{{
