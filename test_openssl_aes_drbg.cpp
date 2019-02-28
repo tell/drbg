@@ -7,7 +7,8 @@ using namespace drbg;
 
 CYBOZU_TEST_AUTO(print_info_openssl) {
     cout << "OpenSSL: version = " << OPENSSL_VERSION_TEXT << endl;
-    cout << "OpenSSL: version number = 0x" << hex << OPENSSL_VERSION_NUMBER << endl;
+    cout << "OpenSSL: version number = 0x" << hex << OPENSSL_VERSION_NUMBER
+         << endl;
 }
 CYBOZU_TEST_AUTO(test_simple) { // {{{
     const size_t nloop = 10000;

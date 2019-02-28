@@ -10,7 +10,6 @@
 
 #include <sodium.h>
 
-
 #include "tool.hpp"
 
 namespace drbg {
@@ -70,10 +69,11 @@ public:
         tool::copy_as_uint(ret, out);
         return ret;
     } // }}}
-    template<class T, class U>
+    template <class T, class U>
     void getBytes(T &out, const U ctr) const { // {{{
         seed_t seed;
-        const auto status = crypto_kdf_derive_from_key(seed.data(), seed.size(), ctr, ctx_.data(), key_.data());
+        const auto status = crypto_kdf_derive_from_key(
+            seed.data(), seed.size(), ctr, ctx_.data(), key_.data());
         if (status != 0) {
             std::string errmsg = "KeyedCtrDRBG_Sodium:getBytes:KDF";
             if (errno != 0) {
@@ -85,5 +85,5 @@ public:
         randombytes_buf_deterministic(out.data(), out.size(), seed.data());
     } // }}}
 }; // }}}
-} // namespace tool
+} // namespace drbg
 // vim: set expandtab foldmethod=marker:
