@@ -5,6 +5,7 @@
 #include "sodium_drbg.hpp"
 
 using namespace std;
+using namespace drbg;
 using namespace tool;
 
 CYBOZU_TEST_AUTO(print_info_sodium) { // {{{
@@ -15,6 +16,7 @@ CYBOZU_TEST_AUTO(print_info_sodium) { // {{{
     cout << "libsodium: minor version = " << minor << endl;
     cout << "libsodium: crypto_kdf_KEYBYTES = " << KeyedCtrDRBG_Sodium::keybytes
          << endl;
+    cout << "libsodium: crypto_kdf_BYTES_MIN = " << crypto_kdf_BYTES_MIN << endl;
     cout << "libsodium: crypto_kdf_CONTEXTBYTES = "
          << KeyedCtrDRBG_Sodium::ctxbytes << endl;
     cout << "libsodium: randombytes_SEEDBYTES = "
@@ -53,6 +55,7 @@ CYBOZU_TEST_AUTO(test_KeyedCtrDRBG_Sodium_with_fixed_key) { // {{{
         for (size_t i = 0; i < nsamples; i++) {
             samples32[i] = a.getUInt32(i);
             samples64[i] = a.getUInt64(i);
+            CYBOZU_TEST_EQUAL(samples32[i], uint32_t(samples64[i]));
         }
     }
     for (size_t j = 0; j < 100; j++) {

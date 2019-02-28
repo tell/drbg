@@ -34,7 +34,11 @@ clean:
 	$(RM) *.o *.out
 .PHONY: check
 check:
-	time ./test_sodium_drbg.out
+	set -x; \
+	for t in $$(ls -1 test_*.out); do \
+		time ./$$t; \
+	done; \
+	set +x
 .PHONY: indent
 indent:
 	which $(CLANG_FORMAT)

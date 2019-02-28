@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cerrno>
 #include <array>
 #include <iomanip>
 #include <iostream>
@@ -9,24 +10,10 @@
 
 #include <sodium.h>
 
-namespace tool {
-template <class T>
-inline std::string to_hex(const T &x, const std::string &delim = ",") { // {{{
-    size_t len = x.size();
-    std::stringstream s;
-    s << "{";
-    if (len > 0) {
-        s << std::hex;
-        s << "0x" << std::setw(2 * sizeof(typename T::value_type))
-          << std::setfill('0') << static_cast<uint_fast64_t>(x[0]);
-        for (size_t i = 1; i < len; i++) {
-            s << delim << "0x" << std::setw(2 * sizeof(typename T::value_type))
-              << std::setfill('0') << static_cast<uint_fast64_t>(x[i]);
-        }
-    }
-    s << "}";
-    return s.str();
-} // }}}
+
+#include "tool.hpp"
+
+namespace drbg {
 class KeyedCtrDRBG_Sodium { // {{{
 public:
     constexpr static auto keybytes = crypto_kdf_KEYBYTES;
@@ -58,7 +45,7 @@ public:
         constexpr size_t len = keybytes;
         assert(len > 0);
         std::stringstream s;
-        s << "[" << to_hex(x.key_) << ":" << to_hex(x.ctx_) << "]";
+        s << "[" << tool::to_hex(x.key_) << ":" << tool::to_hex(x.ctx_) << "]";
         o << s.str();
         return o;
     } // }}}
@@ -69,42 +56,36 @@ public:
 
 public:
     uint32_t getUInt32(const uint32_t ctr) const { // {{{
-        seed_t seed;
-        crypto_kdf_derive_from_key(seed.data(), seed.size(), ctr, ctx_.data(),
-                                   key_.data());
-        buff_t out(sizeof(uint32_t));
-        randombytes_buf_deterministic(out.data(), sizeof(uint32_t),
-                                      seed.data());
-        uint32_t ret = static_cast<uint32_t>(out[0]) +
-                       (static_cast<uint32_t>(out[1]) << 8) +
-                       (static_cast<uint32_t>(out[2]) << (8 * 2)) +
-                       (static_cast<uint32_t>(out[3]) << (8 * 3));
+        constexpr size_t len = std::max(sizeof(uint32_t), size_t(crypto_kdf_BYTES_MIN));
+        std::array<buff_t::value_type, len> out;
+        getBytes(out, ctr);
+        uint32_t ret;
+        tool::copy_as_uint(ret, out);
         return ret;
     } // }}}
     uint64_t getUInt64(const uint64_t ctr) const { // {{{
-        seed_t seed;
-        crypto_kdf_derive_from_key(seed.data(), seed.size(), ctr, ctx_.data(),
-                                   key_.data());
-        buff_t out(sizeof(uint64_t));
-        randombytes_buf_deterministic(out.data(), sizeof(uint64_t),
-                                      seed.data());
-        uint64_t ret = static_cast<uint64_t>(out[0]) +
-                       (static_cast<uint64_t>(out[1]) << 8) +
-                       (static_cast<uint64_t>(out[2]) << (8 * 2)) +
-                       (static_cast<uint64_t>(out[3]) << (8 * 3)) +
-                       (static_cast<uint64_t>(out[4]) << (8 * 4)) +
-                       (static_cast<uint64_t>(out[5]) << (8 * 5)) +
-                       (static_cast<uint64_t>(out[6]) << (8 * 6)) +
-                       (static_cast<uint64_t>(out[7]) << (8 * 7));
+        constexpr size_t len = std::max(sizeof(uint64_t), size_t(crypto_kdf_BYTES_MIN));
+        std::array<buff_t::value_type, len> out;
+        getBytes(out, ctr);
+        uint64_t ret;
+        tool::copy_as_uint(ret, out);
         return ret;
     } // }}}
-    void getBytes(buff_t &out, const uint64_t ctr) const { // {{{
-        seed_t seed;
-        crypto_kdf_derive_from_key(seed.data(), seed.size(), ctr, ctx_.data(),
-                                   key_.data());
-        randombytes_buf_deterministic(out.data(), out.size(), seed.data());
+    template<class T, class U>
+    void getBytes(T &out, const U ctr) const { // {{{
+        static_assert(std::is_integral_v<U>);
+        errno = 0;
+        const auto status = crypto_kdf_derive_from_key(out.data(), out.size(), ctr, ctx_.data(),
+                key_.data());
+        if (status != 0) {
+            std::string errmsg = "KeyedCtrDRBG_Sodium:getBytes:KDF";
+            if (errno != 0) {
+                errmsg += ": ";
+                errmsg += std::strerror(errno);
+            }
+            throw std::invalid_argument(errmsg);
+        }
     } // }}}
 }; // }}}
 } // namespace tool
-
 // vim: set expandtab foldmethod=marker:

@@ -27,8 +27,6 @@ public:
     static_assert(8 == CHAR_BIT);
     static_assert((blocksize % CHAR_BIT) == 0);
     static constexpr size_t blockbytes = blocksize / CHAR_BIT;
-    static_assert(blockbytes > sizeof(uint32_t));
-    static_assert(blockbytes >= sizeof(uint64_t));
     using aes_block_t = std::array<unsigned char, blockbytes>;
     using buff_t = std::vector<unsigned char>;
 
@@ -121,6 +119,8 @@ private:
 public:
     uint32_t getUInt32(const uint32_t ctr) const { // {{{
         aes_block_t out{0};
+        static_assert(blockbytes > sizeof(uint32_t));
+        // out[sizeof(uint32_t)] = 0xff;
         getBytes(out, ctr);
         uint32_t ret;
         tool::copy_as_uint(ret, out);
@@ -128,6 +128,7 @@ public:
     } // }}}
     uint64_t getUInt64(const uint64_t ctr) const { // {{{
         aes_block_t out{0};
+        static_assert(blockbytes > sizeof(uint64_t));
         getBytes(out, ctr);
         uint64_t ret;
         tool::copy_as_uint(ret, out);
