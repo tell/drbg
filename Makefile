@@ -16,10 +16,10 @@ LOADLIBES += $(shell pkg-config --libs openssl)
 %_und.o: %.cpp
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
 %_und.out: LDFLAGS += -fsanitize=undefined
-%_adr.o: CXXFLAGS += -fsanitize=address,leak -O0
+%_adr.o: CXXFLAGS += -fsanitize=address -O0
 %_adr.o: %.cpp
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
-%_adr.out: LDFLAGS += -fsanitize=address,leak
+%_adr.out: LDFLAGS += -fsanitize=address
 %_mem.o: CXXFLAGS += -fsanitize=memory -fsanitize-memory-track-origins -fno-omit-frame-pointer -O0
 %_mem.o: %.cpp
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<

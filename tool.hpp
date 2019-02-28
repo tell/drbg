@@ -4,10 +4,17 @@
 #include <iostream>
 #include <sstream>
 
-#define PUT(x) do { std::cout << #x << "=" << (x) << std::endl; } while(false)
+#define PUT(x)                                                                 \
+    do {                                                                       \
+        std::cout << #x << "=" << (x) << std::endl;                            \
+    } while (false)
 
 namespace drbg {
 namespace tool {
+template<class... Args>
+void unused(Args& ...arg) {
+    ((void)(arg), ...);
+}
 template <class T>
 inline std::string to_hex(const T &x, const std::string &delim = ",") { // {{{
     size_t len = x.size();

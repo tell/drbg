@@ -7,13 +7,26 @@ using namespace drbg;
 
 CYBOZU_TEST_AUTO(test_simple) {
     const size_t nloop = 10000;
-    for (size_t i = 0; i < nloop; i++) {
-        KeyedCtrDRBG_AES a;
-        KeyedCtrDRBG_AES::setRandomKey(a);
-        cout << a << endl;
-        cout << a.getUInt32(0) << endl;
-        cout << a.getUInt32(1) << endl;
-        cout << a.getUInt32(1250) << endl;
+    const KeyedCtrDRBG_AES::KeySize tbl[] = {
+        KeyedCtrDRBG_AES::KeySize::AES128,
+        KeyedCtrDRBG_AES::KeySize::AES192,
+        KeyedCtrDRBG_AES::KeySize::AES256,
+    };
+    for (auto&& keysize : tbl) {
+        KeyedCtrDRBG_AES x(keysize);
+        KeyedCtrDRBG_AES::setRandomKey(x);
+        const auto a = x.getUInt32(1250);
+        const auto b = x.getUInt64(1250);
+        const auto key{x.getKey()};
+        KeyedCtrDRBG_AES y(keysize, key);
+        const auto c = x.getUInt32(1250);
+        const auto d = x.getUInt64(1250);
+        CYBOZU_TEST_EQUAL(a, c);
+        CYBOZU_TEST_EQUAL(b, d);
+        for (size_t i = 0; i < nloop; i++) {
+            const auto t = x.getUInt32(i);
+            tool::unused(t);
+        }
     }
 }
 
