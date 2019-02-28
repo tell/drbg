@@ -19,6 +19,7 @@ public:
     constexpr static auto keybytes = crypto_kdf_KEYBYTES;
     constexpr static auto ctxbytes = crypto_kdf_CONTEXTBYTES;
     constexpr static auto seedbytes = randombytes_SEEDBYTES;
+    static_assert(randombytes_SEEDBYTES >= crypto_kdf_BYTES_MIN);
     using key_t = std::array<uint8_t, keybytes>;
     using ctx_t = std::array<char, ctxbytes>;
     using seed_t = std::array<unsigned char, seedbytes>;
@@ -56,16 +57,14 @@ public:
 
 public:
     uint32_t getUInt32(const uint32_t ctr) const { // {{{
-        constexpr size_t len = std::max(sizeof(uint32_t), size_t(crypto_kdf_BYTES_MIN));
-        std::array<buff_t::value_type, len> out;
+        std::array<buff_t::value_type, sizeof(uint32_t)> out;
         getBytes(out, ctr);
         uint32_t ret;
         tool::copy_as_uint(ret, out);
         return ret;
     } // }}}
     uint64_t getUInt64(const uint64_t ctr) const { // {{{
-        constexpr size_t len = std::max(sizeof(uint64_t), size_t(crypto_kdf_BYTES_MIN));
-        std::array<buff_t::value_type, len> out;
+        std::array<buff_t::value_type, sizeof(uint64_t)> out;
         getBytes(out, ctr);
         uint64_t ret;
         tool::copy_as_uint(ret, out);
@@ -73,10 +72,8 @@ public:
     } // }}}
     template<class T, class U>
     void getBytes(T &out, const U ctr) const { // {{{
-        static_assert(std::is_integral_v<U>);
-        errno = 0;
-        const auto status = crypto_kdf_derive_from_key(out.data(), out.size(), ctr, ctx_.data(),
-                key_.data());
+        seed_t seed;
+        const auto status = crypto_kdf_derive_from_key(seed.data(), seed.size(), ctr, ctx_.data(), key_.data());
         if (status != 0) {
             std::string errmsg = "KeyedCtrDRBG_Sodium:getBytes:KDF";
             if (errno != 0) {
@@ -85,6 +82,7 @@ public:
             }
             throw std::invalid_argument(errmsg);
         }
+        randombytes_buf_deterministic(out.data(), out.size(), seed.data());
     } // }}}
 }; // }}}
 } // namespace tool
