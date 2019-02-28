@@ -11,42 +11,6 @@
 #include "tool.hpp"
 
 namespace drbg {
-namespace tool {
-namespace impl {
-template <class T, class Int, std::size_t... I>
-constexpr void packed_copy_as_bytes_little(T &out, const Int x,
-                                           const std::index_sequence<I...>) {
-    static_assert(std::is_unsigned_v<Int>, "Int should be unsigned");
-    (void(out[I] = (x >> (CHAR_BIT * I)) & 0xff), ...);
-}
-} // namespace impl
-template <class T, class Int>
-constexpr void copy_as_bytes_little(T &out, const Int x) { // {{{
-    /*
-        constexpr size_t len = sizeof(Int);
-        auto t = x;
-        for (size_t i = 0; i < len; i++) {
-            out[i] = t & 0xff;
-            t >>= CHAR_BIT;
-        }
-    */
-    impl::packed_copy_as_bytes_little(out, x,
-                                      std::make_index_sequence<sizeof(Int)>{});
-} // }}}
-namespace impl {
-template <class OutInt, class Vec, std::size_t... I>
-constexpr void packed_copy_as_uint(OutInt &out, const Vec &v,
-                                   const std::index_sequence<I...>) {
-    static_assert(std::is_unsigned_v<OutInt>, "OutInt should be unsigned");
-    out = ((OutInt(v[I]) << (CHAR_BIT * I)) + ...);
-}
-} // namespace impl
-template <class OutInt, class Vec>
-constexpr void copy_as_uint(OutInt &out, const Vec &v) {
-    impl::packed_copy_as_uint(out, v,
-                              std::make_index_sequence<sizeof(OutInt)>{});
-}
-} // namespace tool
 class KeyedCtrDRBG_AES {
     /*
         NOTE: This implmentation is based on OpenSSL 1.0.2q,
@@ -60,11 +24,11 @@ public:
         AES256,
     };
     static constexpr size_t blocksize = 128;
-    static_assert(8 == CHAR_BIT, "CHAR_BIT is not 8");
+    static_assert(8 == CHAR_BIT);
     static_assert((blocksize % CHAR_BIT) == 0);
     static constexpr size_t blockbytes = blocksize / CHAR_BIT;
-    static_assert(blockbytes > sizeof(uint32_t), "blockbytes must be greater than sizeof(uint32_t)");
-    static_assert(blockbytes > sizeof(uint64_t), "blockbytes must be greater than sizeof(uint64_t)");
+    static_assert(blockbytes > sizeof(uint32_t));
+    static_assert(blockbytes >= sizeof(uint64_t));
     using aes_block_t = std::array<unsigned char, blockbytes>;
     using buff_t = std::vector<unsigned char>;
 
@@ -158,12 +122,6 @@ public:
     uint32_t getUInt32(const uint32_t ctr) const { // {{{
         aes_block_t out{0};
         getBytes(out, ctr);
-        /*
-        const uint32_t ret = static_cast<uint32_t>(out[0]) +
-                       (static_cast<uint32_t>(out[1]) << 8) +
-                       (static_cast<uint32_t>(out[2]) << (8 * 2)) +
-                       (static_cast<uint32_t>(out[3]) << (8 * 3));
-        */
         uint32_t ret;
         tool::copy_as_uint(ret, out);
         return ret;
@@ -171,16 +129,6 @@ public:
     uint64_t getUInt64(const uint64_t ctr) const { // {{{
         aes_block_t out{0};
         getBytes(out, ctr);
-        /*
-        const uint64_t ret = static_cast<uint64_t>(out[0]) +
-                       (static_cast<uint64_t>(out[1]) << 8) +
-                       (static_cast<uint64_t>(out[2]) << (8 * 2)) +
-                       (static_cast<uint64_t>(out[3]) << (8 * 3)) +
-                       (static_cast<uint64_t>(out[4]) << (8 * 4)) +
-                       (static_cast<uint64_t>(out[5]) << (8 * 5)) +
-                       (static_cast<uint64_t>(out[6]) << (8 * 6)) +
-                       (static_cast<uint64_t>(out[7]) << (8 * 7));
-        */
         uint64_t ret;
         tool::copy_as_uint(ret, out);
         return ret;

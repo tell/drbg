@@ -12,7 +12,7 @@ CYBOZU_TEST_AUTO(test_simple) {
         KeyedCtrDRBG_AES::KeySize::AES192,
         KeyedCtrDRBG_AES::KeySize::AES256,
     };
-    for (auto&& keysize : tbl) {
+    for (auto &&keysize : tbl) {
         KeyedCtrDRBG_AES x(keysize);
         KeyedCtrDRBG_AES::setRandomKey(x);
         const auto a = x.getUInt32(1250);
