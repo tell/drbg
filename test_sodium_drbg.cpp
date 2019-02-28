@@ -18,6 +18,8 @@ CYBOZU_TEST_AUTO(print_info_sodium) { // {{{
          << endl;
     cout << "libsodium: crypto_kdf_BYTES_MIN = " << crypto_kdf_BYTES_MIN
          << endl;
+    cout << "libsodium: crypto_kdf_BYTES_MAX = " << crypto_kdf_BYTES_MAX
+         << endl;
     cout << "libsodium: crypto_kdf_CONTEXTBYTES = "
          << KeyedCtrDRBG_Sodium::ctxbytes << endl;
     cout << "libsodium: randombytes_SEEDBYTES = "
