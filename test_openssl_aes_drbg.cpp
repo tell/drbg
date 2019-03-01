@@ -23,7 +23,8 @@ CYBOZU_TEST_AUTO(test_simple) { // {{{
         const auto a = x.getUInt32(1250);
         const auto b = x.getUInt64(1250);
         const auto key{x.getKey()};
-        KeyedCtrDRBG_AES y(keysize, key);
+        KeyedCtrDRBG_AES y(keysize);
+        y.setKey(key);
         const auto c = x.getUInt32(1250);
         const auto d = x.getUInt64(1250);
         CYBOZU_TEST_EQUAL(a, c);

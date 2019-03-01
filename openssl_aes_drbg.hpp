@@ -78,18 +78,13 @@ public:
             throw std::invalid_argument("KeyedCtrDRBG_AES:getName: unknown");
         }
     } // }}}
-    explicit KeyedCtrDRBG_AES(const KeySize size, const key_t &key,
-                              const ctx_t &ctx)
-        : ci_(getCipher(size)), size_(size), key_(key), ctx_(ctx) { // {{{
+    explicit KeyedCtrDRBG_AES(const KeySize size)
+        : ci_(getCipher(size)), size_(size), key_({}), ctx_({0}) { // {{{
         assert(ci_ != nullptr);
         const auto keysize = EVP_CIPHER_key_length(ci_);
-        assert(size_t(keysize) == key_.size());
+        key_.resize(keysize);
     } // }}}
-    explicit KeyedCtrDRBG_AES(const KeySize size, const key_t &key)
-        : KeyedCtrDRBG_AES(size, key, {0}) {}
-    explicit KeyedCtrDRBG_AES(const KeySize size)
-        : KeyedCtrDRBG_AES(size, {0}, {0}) {}
-    explicit KeyedCtrDRBG_AES() : KeyedCtrDRBG_AES(KeySize::AES128, {0}, {0}) {}
+    explicit KeyedCtrDRBG_AES() : KeyedCtrDRBG_AES(KeySize::AES128) {}
     friend std::ostream &operator<<(std::ostream &o,
                                     const KeyedCtrDRBG_AES &x) { // {{{
         o << "[" << getName(x.size_) << ":" << tool::to_hex(x.key_) << "]";
@@ -152,6 +147,10 @@ public:
         EVP_CIPHER_CTX_set_padding(c.x_, 0);
         aes_block_t ctrbytes{0};
         tool::copy_as_bytes_little(ctrbytes, ctr);
+        using std::begin;
+        using std::end;
+        static_assert(blockbytes >= ctxbytes);
+        std::copy(begin(ctx_), end(ctx_), begin(ctrbytes) + (blockbytes - ctxbytes));
         {
             int outlen;
             const auto status = EVP_EncryptUpdate(

@@ -34,11 +34,11 @@ clean:
 	$(RM) *.o *.out
 .PHONY: check
 check:
-	set -x; \
+	set -xe; \
 	for t in $$(ls -1 test_*.out); do \
 		time ./$$t; \
 	done; \
-	set +x
+	set +xe
 .PHONY: indent
 indent:
 	which $(CLANG_FORMAT)
