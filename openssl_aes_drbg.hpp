@@ -30,14 +30,18 @@ public:
     static constexpr size_t blockbytes = blocksize / CHAR_BIT;
     using aes_block_t = std::array<unsigned char, blockbytes>;
     using buff_t = std::vector<unsigned char>;
+    static constexpr size_t ctxbytes = 8;
+    static_assert(blockbytes >= (sizeof(uint64_t) + ctxbytes));
+    using ctx_t = std::array<unsigned char, ctxbytes>;
 
 private:
     const EVP_CIPHER *ci_;
     KeySize size_;
     key_t key_;
+    ctx_t ctx_;
 
 public:
-    static void setRandomKey(KeyedCtrDRBG_AES &x) {
+    static void setRandomKey(KeyedCtrDRBG_AES &x) { // {{{
         assert(x.key_.size() > 0);
         {
             const auto status = RAND_bytes(x.key_.data(), x.key_.size());
@@ -46,7 +50,7 @@ public:
                     ERR_error_string(ERR_get_error(), nullptr));
             }
         }
-    }
+    } // }}}
     static const EVP_CIPHER *getCipher(const KeySize size) { // {{{
         switch (size) {
         case KeySize::AES128:
@@ -74,19 +78,18 @@ public:
             throw std::invalid_argument("KeyedCtrDRBG_AES:getName: unknown");
         }
     } // }}}
-    explicit KeyedCtrDRBG_AES(const KeySize size, const key_t &key)
-        : ci_(getCipher(size)), size_(size), key_(key) { // {{{
+    explicit KeyedCtrDRBG_AES(const KeySize size, const key_t &key,
+                              const ctx_t &ctx)
+        : ci_(getCipher(size)), size_(size), key_(key), ctx_(ctx) { // {{{
         assert(ci_ != nullptr);
         const auto keysize = EVP_CIPHER_key_length(ci_);
         assert(size_t(keysize) == key_.size());
     } // }}}
+    explicit KeyedCtrDRBG_AES(const KeySize size, const key_t &key)
+        : KeyedCtrDRBG_AES(size, key, {0}) {}
     explicit KeyedCtrDRBG_AES(const KeySize size)
-        : ci_(getCipher(size)), size_(size), key_({}) { // {{{
-        assert(ci_ != nullptr);
-        const auto keysize = EVP_CIPHER_key_length(ci_);
-        key_.resize(keysize);
-    } // }}}
-    explicit KeyedCtrDRBG_AES() : KeyedCtrDRBG_AES(KeySize::AES128) {}
+        : KeyedCtrDRBG_AES(size, {0}, {0}) {}
+    explicit KeyedCtrDRBG_AES() : KeyedCtrDRBG_AES(KeySize::AES128, {0}, {0}) {}
     friend std::ostream &operator<<(std::ostream &o,
                                     const KeyedCtrDRBG_AES &x) { // {{{
         o << "[" << getName(x.size_) << ":" << tool::to_hex(x.key_) << "]";
@@ -99,25 +102,8 @@ public:
         std::copy(begin(key), end(key), begin(key_));
     } // }}}
     const key_t &getKey() const { return key_; }
-
-private:
-    struct Ctx { // {{{
-        EVP_CIPHER_CTX *ctx_;
-        Ctx() // {{{
-            : ctx_(nullptr) {
-            ctx_ = EVP_CIPHER_CTX_new();
-            if (ctx_ == nullptr) {
-                throw std::runtime_error(
-                    "KeyedCtrDRBG_AES:Ctx:ctor:OpenSSL:EVP_CIPHER_CTX_new: failed");
-            }
-        } // }}}
-        ~Ctx() { // {{{
-            if (ctx_ != nullptr) {
-                EVP_CIPHER_CTX_free(ctx_);
-            }
-        } // }}}
-    }; // }}}
-public:
+    void setCtx(const ctx_t &ctx) { ctx_ = ctx; }
+    const ctx_t &getCtx() const { return ctx_; }
     uint32_t getUInt32(const uint32_t ctr) const { // {{{
         aes_block_t out{0};
         static_assert(blockbytes > sizeof(uint32_t));
@@ -135,24 +121,41 @@ public:
         tool::copy_as_uint(ret, out);
         return ret;
     } // }}}
+private:
+    struct OpenSSL_Ctx { // {{{
+        EVP_CIPHER_CTX *x_;
+        OpenSSL_Ctx() // {{{
+            : x_(nullptr) {
+            x_ = EVP_CIPHER_CTX_new();
+            if (x_ == nullptr) {
+                throw std::runtime_error(
+                    "KeyedCtrDRBG_AES:Ctx:ctor:OpenSSL:EVP_CIPHER_CTX_new: failed");
+            }
+        } // }}}
+        ~OpenSSL_Ctx() { // {{{
+            if (x_ != nullptr) {
+                EVP_CIPHER_CTX_free(x_);
+            }
+        } // }}}
+    }; // }}}
+public:
     void getBytes(aes_block_t &out, const uint64_t ctr) const { // {{{
-        Ctx ctx;
+        OpenSSL_Ctx c;
         {
-            const auto status = EVP_EncryptInit_ex(ctx.ctx_, ci_, nullptr,
-                                                   key_.data(), nullptr);
+            const auto status =
+                EVP_EncryptInit_ex(c.x_, ci_, nullptr, key_.data(), nullptr);
             if (status != 1) {
                 throw std::runtime_error(
                     "KeyedCtrDRBG_AES:getUInt32: init failed");
             }
         }
-        EVP_CIPHER_CTX_set_padding(ctx.ctx_, 0);
+        EVP_CIPHER_CTX_set_padding(c.x_, 0);
         aes_block_t ctrbytes{0};
         tool::copy_as_bytes_little(ctrbytes, ctr);
         {
             int outlen;
-            const auto status =
-                EVP_EncryptUpdate(ctx.ctx_, out.data(), &outlen,
-                                  ctrbytes.data(), ctrbytes.size());
+            const auto status = EVP_EncryptUpdate(
+                c.x_, out.data(), &outlen, ctrbytes.data(), ctrbytes.size());
             if (status != 1) {
                 throw std::runtime_error(
                     "KeyedCtrDRBG_AES:getUInt32: update failed");
@@ -162,7 +165,7 @@ public:
         {
             int outlen;
             const auto status =
-                EVP_EncryptFinal_ex(ctx.ctx_, out.data() + out.size(), &outlen);
+                EVP_EncryptFinal_ex(c.x_, out.data() + out.size(), &outlen);
             if (status != 1) {
                 throw std::runtime_error(
                     "KeyedCtrDRBG_AES:getUInt32: final failed");
