@@ -38,7 +38,6 @@ private:
     const EVP_CIPHER *ci_;
     KeySize size_;
     key_t key_;
-    ctx_t ctx_;
 
 public:
     static void setRandomKey(KeyedCtrDRBG_AES &x) { // {{{
@@ -79,7 +78,7 @@ public:
         }
     } // }}}
     explicit KeyedCtrDRBG_AES(const KeySize size)
-        : ci_(getCipher(size)), size_(size), key_({}), ctx_({0}) { // {{{
+        : ci_(getCipher(size)), size_(size), key_({}) { // {{{
         assert(ci_ != nullptr);
         const auto keysize = EVP_CIPHER_key_length(ci_);
         key_.resize(keysize);
@@ -97,8 +96,6 @@ public:
         std::copy(begin(key), end(key), begin(key_));
     } // }}}
     const key_t &getKey() const { return key_; }
-    void setCtx(const ctx_t &ctx) { ctx_ = ctx; }
-    const ctx_t &getCtx() const { return ctx_; }
     uint32_t getUInt32(const uint32_t ctr) const { // {{{
         aes_block_t out{0};
         static_assert(blockbytes > sizeof(uint32_t));
@@ -147,10 +144,6 @@ public:
         EVP_CIPHER_CTX_set_padding(c.x_, 0);
         aes_block_t ctrbytes{0};
         tool::copy_as_bytes_little(ctrbytes, ctr);
-        using std::begin;
-        using std::end;
-        static_assert(blockbytes >= ctxbytes);
-        std::copy(begin(ctx_), end(ctx_), begin(ctrbytes) + (blockbytes - ctxbytes));
         {
             int outlen;
             const auto status = EVP_EncryptUpdate(
