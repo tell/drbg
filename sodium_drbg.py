@@ -17,7 +17,9 @@ class KeyedCtrDRBG(object):
     def genSeedByInputScalar(self, s):
         seed = (ctypes.c_ubyte * seedbytes)()
         subkey_id = ctypes.c_uint64(s)
-        sodium.crypto_kdf_derive_from_key(seed, len(seed), subkey_id, self.ctx, self.key)
+        status = sodium.crypto_kdf_derive_from_key(seed, len(seed), subkey_id, self.ctx, self.key)
+        if status is not 0:
+            raise 'KeyedCtrDRBG.genSeedByInputScalar:KDF status = {}'.format(status)
         return seed
     def getUInt32(self, ctr):
         seed = self.genSeedByInputScalar(ctr)
