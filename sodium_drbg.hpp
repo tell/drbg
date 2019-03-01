@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cerrno>
+#include <cstring>
 #include <array>
 #include <iomanip>
 #include <iostream>
