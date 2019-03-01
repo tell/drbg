@@ -58,7 +58,6 @@ CYBOZU_TEST_AUTO(test_KeyedCtrDRBG_Sodium_with_fixed_key) { // {{{
         for (size_t i = 0; i < nsamples; i++) {
             samples32[i] = a.getUInt32(i);
             samples64[i] = a.getUInt64(i);
-            CYBOZU_TEST_EQUAL(samples32[i], uint32_t(samples64[i]));
         }
     }
     for (size_t j = 0; j < 100; j++) {

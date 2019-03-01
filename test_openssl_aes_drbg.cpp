@@ -28,8 +28,6 @@ CYBOZU_TEST_AUTO(test_simple) { // {{{
         const auto d = x.getUInt64(1250);
         CYBOZU_TEST_EQUAL(a, c);
         CYBOZU_TEST_EQUAL(b, d);
-        CYBOZU_TEST_EQUAL(a, uint32_t(b));
-        CYBOZU_TEST_EQUAL(c, uint32_t(d));
         for (size_t i = 0; i < nloop; i++) {
             const auto t = x.getUInt32(i);
             tool::unused(t);
