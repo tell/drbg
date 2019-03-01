@@ -36,7 +36,7 @@ clean:
 check:
 	set -xe; \
 	for t in $$(ls -1 test_*.out); do \
-		time ./$$t; \
+		./$$t; \
 	done; \
 	set +xe
 .PHONY: indent
