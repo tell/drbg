@@ -12,30 +12,30 @@ LOADLIBES += $(shell pkg-config --libs openssl)
 
 %.out: %.o
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
-%_und.o: CXXFLAGS += -fsanitize=undefined -O0
-%_und.o: %.cpp
+%__und.o: CXXFLAGS += -fsanitize=undefined -O0
+%__und.o: %.cpp
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
-%_und.out: LDFLAGS += -fsanitize=undefined
-%_adr.o: CXXFLAGS += -fsanitize=address -O0
-%_adr.o: %.cpp
+%__und.out: LDFLAGS += -fsanitize=undefined
+%__adr.o: CXXFLAGS += -fsanitize=address -O0
+%__adr.o: %.cpp
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
-%_adr.out: LDFLAGS += -fsanitize=address
-%_mem.o: CXXFLAGS += -fsanitize=memory -fsanitize-memory-track-origins -fno-omit-frame-pointer -O0
-%_mem.o: %.cpp
+%__adr.out: LDFLAGS += -fsanitize=address
+%__mem.o: CXXFLAGS += -fsanitize=memory -fsanitize-memory-track-origins -fno-omit-frame-pointer -O0
+%__mem.o: %.cpp
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
-%_mem.out: LDFLAGS += -fsanitize=memory
+%__mem.out: LDFLAGS += -fsanitize=memory
 
 .dep:
 	mkdir -p $@
 .PHONY: do
-do: .dep $(addprefix test_sodium_drbg,.out _adr.out) $(addprefix test_openssl_aes_drbg,.out _adr.out)
+do: .dep $(addprefix test_sodium_drbg,.out __adr.out) $(addprefix test_openssl_aes_drbg,.out __adr.out)
 .PHONY: clean
 clean:
 	$(RM) *.o *.out
 .PHONY: check
 check:
 	set -xe; \
-	for t in $$(ls -1 test_*.out); do \
+	for t in $$(ls -1 test_*.out | grep -v __); do \
 		./$$t; \
 	done; \
 	set +xe
