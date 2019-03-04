@@ -21,25 +21,15 @@ matrix:
     env:
     - MY_MODE="python"
 before_install:
-- env
-- docker pull $MY_TARGET_DIST
-- docker run --name $MY_NAME -v $TRAVIS_BUILD_DIR:$MY_TARGET_MOUNT -td $MY_TARGET_DIST /bin/bash
-- docker exec -ti $MY_NAME bash -c "apt update" > /dev/null
+- ./travis-ci/before_install_$TRAVIS_OS_NAME.bash
 install:
-- docker exec -ti $MY_NAME bash -c "apt install -y time wget" > /dev/null
-- docker exec -ti $MY_NAME bash -c "apt install -y build-essential git pkg-config libssl-dev" > /dev/null
-# - docker exec -ti $MY_NAME bash -c "apt install -y libsodium-dev" > /dev/null
-- docker exec -ti $MY_NAME bash -c "wget https://github.com/jedisct1/libsodium/releases/download/1.0.17/libsodium-1.0.17.tar.gz; tar xf libsodium-1.0.17.tar.gz; cd libsodium-1.0.17; ./configure; make -j; make -j install" > /dev/null
-- docker exec -ti $MY_NAME bash -c "apt install -y python3-pytest" > /dev/null
-- docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT ; git clone https://github.com/herumi/cybozulib.git" > /dev/null
+- ./travis-ci/install_$TRAVIS_OS_NAME.bash
 before_script:
+- env
 - docker exec -ti $MY_NAME bash -c "env"
-- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "$CC --version"; else echo skip; fi
-- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "$CXX --version"; else echo skip; fi
+- ./travis-ci/before_script_$TRAVIS_OS_NAME.bash
 script:
-- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT; env CPATH=$MY_CPATH make CXX=$CXX"; else echo skip; fi
-- if [ "cpp" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT; make check"; else echo skip; fi
-- if [ "python" = "$MY_MODE" ]; then docker exec -ti $MY_NAME bash -c "cd $MY_TARGET_MOUNT; py.test-3"; else echo skip; fi
+- ./travis-ci/script_$TRAVIS_OS_NAME.bash
 # after_failure:
 # - tail -n 1000 make.log
 notifications:
