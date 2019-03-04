@@ -36,6 +36,7 @@ clean:
 check:
 	set -xe; \
 	for t in $$(ls -1 test_*.out | grep -v __); do \
+		ldd ./$$t; \
 		./$$t; \
 	done; \
 	set +xe
