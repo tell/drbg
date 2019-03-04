@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ev
-docker exec -ti $MY_NAME bash -c "apt install -y
+docker exec -ti $MY_NAME bash -c "apt install -y \
     time wget build-essential git pkg-config libssl-dev python3-pytest"
 # docker exec -ti $MY_NAME bash -c "apt install -y libsodium-dev" > /dev/null
 docker exec -ti $MY_NAME bash -c "set -ev;
