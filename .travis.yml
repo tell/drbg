@@ -25,8 +25,8 @@ before_install:
 install:
 - ./travis-ci/install_$TRAVIS_OS_NAME.bash
 before_script:
-- env
-- docker exec -ti $MY_NAME bash -c "env"
+# - env
+# - docker exec -ti $MY_NAME bash -c "env"
 - ./travis-ci/before_script_$TRAVIS_OS_NAME.bash
 script:
 - ./travis-ci/script_$TRAVIS_OS_NAME.bash
