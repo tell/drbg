@@ -3,7 +3,7 @@ CXX = clang++
 CPPFLAGS += -g3 -MMD -MP -MF .dep/$(basename $(notdir $@)).d
 CPPFLAGS += $(shell pkg-config --cflags libsodium)
 CPPFLAGS += $(shell pkg-config --cflags openssl)
-CXXFLAGS += -O2 -std=c++17 -Wall -Wextra
+CXXFLAGS += -O2 -std=c++14 -Wall -Wextra
 LDFLAGS += -g3
 LOADLIBES += $(shell pkg-config --libs libsodium)
 LOADLIBES += $(shell pkg-config --libs openssl)
