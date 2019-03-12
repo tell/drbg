@@ -12,8 +12,11 @@
 
 namespace drbg {
 namespace tool {
-template <class T> void unused(T&& x) { static_cast<void>(x); }
-template <class T, class... Args> void unused(T&& x, Args&&... args) { unused(x); unused(args...); }
+template <class T> void unused(T &&x) { static_cast<void>(x); }
+template <class T, class... Args> void unused(T &&x, Args &&... args) {
+    unused(x);
+    unused(args...);
+}
 template <class T>
 inline std::string to_hex(const T &x, const std::string &delim = ",") { // {{{
     size_t len = x.size();
@@ -32,19 +35,37 @@ inline std::string to_hex(const T &x, const std::string &delim = ",") { // {{{
     return s.str();
 } // }}}
 namespace impl {
+#if 0
 template <class T, class Int, std::size_t... I>
 constexpr void
 packed_copy_as_bytes_little(T &out, const Int x,
                             const std::index_sequence<I...>) { // {{{
     (void(out[I] = (x >> (CHAR_BIT * I)) & 0xff), ...);
 } // }}}
+#else
+template <class T, class Int, std::size_t I>
+constexpr void packed_copy_as_bytes_little(T &out, const Int x) { // {{{
+    out[I] = (x >> (CHAR_BIT * I)) & 0xff;
+} // }}}
+template <class T, class Int>
+constexpr void packed_copy_as_bytes_little(T &out, const Int x,
+                                           const std::index_sequence<>) {}
+template <class T, class Int, std::size_t I, std::size_t... Args>
+constexpr void
+packed_copy_as_bytes_little(T &out, const Int x,
+                            const std::index_sequence<I, Args...>) { // {{{
+    packed_copy_as_bytes_little<T, Int, I>(out, x);
+    packed_copy_as_bytes_little(out, x, std::index_sequence<Args...>{});
+} // }}}
+#endif
 } // namespace impl
 template <class T, class Int>
 constexpr void copy_as_bytes_little(T &out, const Int x) { // {{{
     my_static_assert(std::is_unsigned<Int>::value);
-    my_static_assert((sizeof(Int) <=
-                  std::conditional<std::is_array<T>::value, std::extent<T, 0>,
-                                     std::tuple_size<T>>::type::value));
+    my_static_assert(
+        (sizeof(Int) <=
+         std::conditional<std::is_array<T>::value, std::extent<T, 0>,
+                          std::tuple_size<T>>::type::value));
     impl::packed_copy_as_bytes_little(out, x,
                                       std::make_index_sequence<sizeof(Int)>{});
 } // }}}
@@ -58,9 +79,10 @@ constexpr void packed_copy_as_uint(OutInt &out, const Vec &v,
 template <class OutInt, class T>
 constexpr void copy_as_uint(OutInt &out, const T &v) {
     my_static_assert(std::is_unsigned<OutInt>::value);
-    my_static_assert((sizeof(OutInt) <=
-                  std::conditional_t<std::is_array<T>::value, std::extent<T, 0>,
-                                     std::tuple_size<T>>::value));
+    my_static_assert(
+        (sizeof(OutInt) <=
+         std::conditional_t<std::is_array<T>::value, std::extent<T, 0>,
+                            std::tuple_size<T>>::value));
     impl::packed_copy_as_uint(out, v,
                               std::make_index_sequence<sizeof(OutInt)>{});
 }
