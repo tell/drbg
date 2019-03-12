@@ -25,13 +25,13 @@ public:
         AES256,
     };
     static constexpr size_t blocksize = 128;
-    static_assert(8 == CHAR_BIT);
-    static_assert((blocksize % CHAR_BIT) == 0);
+    my_static_assert(8 == CHAR_BIT);
+    my_static_assert((blocksize % CHAR_BIT) == 0);
     static constexpr size_t blockbytes = blocksize / CHAR_BIT;
     using aes_block_t = std::array<unsigned char, blockbytes>;
     using buff_t = std::vector<unsigned char>;
     static constexpr size_t ctxbytes = 8;
-    static_assert(blockbytes >= (sizeof(uint64_t) + ctxbytes));
+    my_static_assert(blockbytes >= (sizeof(uint64_t) + ctxbytes));
     using ctx_t = std::array<unsigned char, ctxbytes>;
 
 private:
@@ -98,7 +98,7 @@ public:
     const key_t &getKey() const { return key_; }
     uint32_t getUInt32(const uint32_t ctr) const { // {{{
         aes_block_t out{0};
-        static_assert(blockbytes > sizeof(uint32_t));
+        my_static_assert(blockbytes > sizeof(uint32_t));
         // out[sizeof(uint32_t)] = 0xff;
         getBytes(out, ctr);
         uint32_t ret;
@@ -107,7 +107,7 @@ public:
     } // }}}
     uint64_t getUInt64(const uint64_t ctr) const { // {{{
         aes_block_t out{0};
-        static_assert(blockbytes > sizeof(uint64_t));
+        my_static_assert(blockbytes > sizeof(uint64_t));
         getBytes(out, ctr);
         uint64_t ret;
         tool::copy_as_uint(ret, out);
