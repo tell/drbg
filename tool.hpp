@@ -78,16 +78,16 @@ constexpr void packed_copy_as_uint(OutInt &out, const Vec &v,
 }
 #else
 template <class Vec, std::size_t I>
-constexpr uint64_t packed_copy_as_uint64(const Vec &v) {
-    return uint64_t(v[I]) << (CHAR_BIT * I);
+constexpr uint_fast64_t packed_copy_as_uint64(const Vec &v) {
+    return uint_fast64_t(v[I]) << (CHAR_BIT * I);
 }
 template <class Vec>
-constexpr uint64_t packed_copy_as_uint64(const Vec &,
-                                         const std::index_sequence<>) {
+constexpr uint_fast64_t packed_copy_as_uint64(const Vec &,
+                                              const std::index_sequence<>) {
     return 0;
 }
 template <class Vec, std::size_t I, std::size_t... Args>
-constexpr uint64_t
+constexpr uint_fast64_t
 packed_copy_as_uint64(const Vec &v, const std::index_sequence<I, Args...>) {
     return packed_copy_as_uint64<Vec, I>(v) +
            packed_copy_as_uint64(v, std::index_sequence<Args...>{});
