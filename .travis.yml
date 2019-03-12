@@ -5,7 +5,6 @@ service:
 env:
   global:
   - MY_NAME=travis-ci
-  - MY_TARGET_DIST=ubuntu:18.04
   - MY_TARGET_MOUNT=/tell/sodium-drbg
 matrix:
   include:
@@ -13,12 +12,21 @@ matrix:
     dist: xenial
     compiler: gcc
     env:
+    - MY_TARGET_DIST=ubuntu:18.04
+    - MY_MODE="cpp"
+    - MY_CPATH=cybozulib/include
+  - os: linux
+    dist: xenial
+    compiler: gcc
+    env:
+    - MY_TARGET_DIST=ubuntu:16.04
     - MY_MODE="cpp"
     - MY_CPATH=cybozulib/include
   - os: linux
     dist: xenial
     language: python
     env:
+    - MY_TARGET_DIST=ubuntu:18.04
     - MY_MODE="python"
 before_install:
 - ./travis-ci/before_install_$TRAVIS_OS_NAME.bash
