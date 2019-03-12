@@ -19,8 +19,8 @@ public:
     constexpr static auto keybytes = crypto_kdf_KEYBYTES;
     constexpr static auto ctxbytes = crypto_kdf_CONTEXTBYTES;
     constexpr static auto seedbytes = randombytes_SEEDBYTES;
-    static_assert(randombytes_SEEDBYTES >= crypto_kdf_BYTES_MIN);
-    static_assert(randombytes_SEEDBYTES <= crypto_kdf_BYTES_MAX);
+    my_static_assert(randombytes_SEEDBYTES >= crypto_kdf_BYTES_MIN);
+    my_static_assert(randombytes_SEEDBYTES <= crypto_kdf_BYTES_MAX);
     using key_t = std::array<uint8_t, keybytes>;
     using ctx_t = std::array<char, ctxbytes>;
     using seed_t = std::array<unsigned char, seedbytes>;
