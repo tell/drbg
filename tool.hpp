@@ -70,11 +70,34 @@ constexpr void copy_as_bytes_little(T &out, const Int x) { // {{{
                                       std::make_index_sequence<sizeof(Int)>{});
 } // }}}
 namespace impl {
+#if 0
 template <class OutInt, class Vec, std::size_t... I>
 constexpr void packed_copy_as_uint(OutInt &out, const Vec &v,
                                    const std::index_sequence<I...>) {
     out = ((OutInt(v[I]) << (CHAR_BIT * I)) + ...);
 }
+#else
+template <class Vec, std::size_t I>
+constexpr uint64_t packed_copy_as_uint64(const Vec &v) {
+    return uint64_t(v[I]) << (CHAR_BIT * I);
+}
+template <class Vec>
+constexpr uint64_t packed_copy_as_uint64(const Vec &,
+                                         const std::index_sequence<>) {
+    return 0;
+}
+template <class Vec, std::size_t I, std::size_t... Args>
+constexpr uint64_t
+packed_copy_as_uint64(const Vec &v, const std::index_sequence<I, Args...>) {
+    return packed_copy_as_uint64<Vec, I>(v) +
+           packed_copy_as_uint64(v, std::index_sequence<Args...>{});
+}
+template <class OutInt, class Vec, std::size_t... Args>
+constexpr void packed_copy_as_uint(OutInt &out, const Vec &v,
+                                   const std::index_sequence<Args...>) {
+    out = packed_copy_as_uint64(v, std::index_sequence<Args...>{});
+}
+#endif
 } // namespace impl
 template <class OutInt, class T>
 constexpr void copy_as_uint(OutInt &out, const T &v) {
