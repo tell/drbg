@@ -12,23 +12,11 @@ LOADLIBES += $(shell pkg-config --libs openssl)
 
 %.out: %.o
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
-%__und.o: CXXFLAGS += -fsanitize=undefined -O0
-%__und.o: %.cpp
-	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
-%__und.out: LDFLAGS += -fsanitize=undefined
-%__adr.o: CXXFLAGS += -fsanitize=address -O0
-%__adr.o: %.cpp
-	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
-%__adr.out: LDFLAGS += -fsanitize=address
-%__mem.o: CXXFLAGS += -fsanitize=memory -fsanitize-memory-track-origins -fno-omit-frame-pointer -O0
-%__mem.o: %.cpp
-	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
-%__mem.out: LDFLAGS += -fsanitize=memory
 
 .dep:
 	mkdir -p $@
 .PHONY: do
-do: .dep $(addprefix test_sodium_drbg,.out __adr.out) $(addprefix test_openssl_aes_drbg,.out __adr.out)
+do: .dep test_sodium_drbg.out test_openssl_aes_drbg.out
 .PHONY: clean
 clean:
 	$(RM) *.o *.out
