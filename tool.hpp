@@ -48,7 +48,7 @@ constexpr void packed_copy_as_bytes_little(T &out, const Int x) { // {{{
     out[I] = (x >> (CHAR_BIT * I)) & 0xff;
 } // }}}
 template <class T, class Int>
-constexpr void packed_copy_as_bytes_little(T &out, const Int x,
+constexpr void packed_copy_as_bytes_little(T &, const Int,
                                            const std::index_sequence<>) {}
 template <class T, class Int, std::size_t I, std::size_t... Args>
 constexpr void
