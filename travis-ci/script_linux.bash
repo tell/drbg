@@ -5,7 +5,7 @@ if [ "cpp" = "$MY_MODE" ]; then
         cd $MY_TARGET_MOUNT;
         env CPATH=$MY_CPATH make CXX=$CXX;
         export LD_LIBRARY_PATH=/usr/local/lib;
-        make check"
+        make check CXX=$CXX"
 elif [ "python" = "$MY_MODE" ]; then
     docker exec -ti $MY_NAME bash -c "set -ev;
         export LD_LIBRARY_PATH=/usr/local/lib;
