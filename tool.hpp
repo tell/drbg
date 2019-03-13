@@ -12,10 +12,10 @@
 
 namespace drbg {
 namespace tool {
-template <class T> void unused(T &&x) { static_cast<void>(x); }
+template <class T> void unused(const T &x) { static_cast<void>(x); }
 template <class T, class... Args> void unused(T &&x, Args &&... args) {
-    unused(x);
-    unused(args...);
+    unused(std::forward<T>(x));
+    unused(std::forward<Args...>(args)...);
 }
 template <class T>
 inline std::string to_hex(const T &x, const std::string &delim = ",") { // {{{

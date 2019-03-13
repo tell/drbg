@@ -1,3 +1,5 @@
+.DEFAULT_GOAL := do
+
 CC = $(CXX)
 CXX = clang++
 CPPFLAGS += -g3 -MMD -MP -MF .dep/$(basename $(notdir $@)).d
@@ -21,7 +23,7 @@ do: .dep test_sodium_drbg.out test_openssl_aes_drbg.out
 clean:
 	$(RM) *.o *.out
 .PHONY: check
-check:
+check: do
 	set -xe; \
 	for t in $$(ls -1 test_*.out | grep -v __); do \
 		./$$t; \
