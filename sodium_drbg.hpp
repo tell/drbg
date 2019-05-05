@@ -46,6 +46,7 @@ public:
                                     const KeyedCtrDRBG_Sodium &x) { // {{{
         constexpr size_t len = keybytes;
         assert(len > 0);
+        tool::unused(len);
         std::stringstream s;
         s << "[" << tool::to_hex(x.key_) << ":" << tool::to_hex(x.ctx_) << "]";
         o << s.str();
