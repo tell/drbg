@@ -14,7 +14,7 @@ namespace drbg {
 namespace tool {
 using swallow = std::initializer_list<int>;
 template <class... Args> void unused(Args &&... args) {
-    (void) swallow{(void(args), 0)...};
+    (void)swallow{(void(args), 0)...};
 }
 template <class T>
 inline std::string to_hex(const T &x, const std::string &delim = ",") { // {{{
@@ -77,18 +77,19 @@ constexpr void packed_copy_as_uint(OutInt &out, const Vec &v,
 }
 #else
 template <class Vec, std::size_t I>
-constexpr uint_fast64_t packed_copy_as_uint64(const Vec &v) {
+constexpr auto shifted_uint64(const Vec &v, const std::index_sequence<I>) {
     return uint_fast64_t(v[I]) << (CHAR_BIT * I);
 }
-template <class Vec>
-constexpr uint_fast64_t packed_copy_as_uint64(const Vec &,
-                                              const std::index_sequence<>) {
-    return 0;
+template <class Vec, std::size_t I, std::size_t J>
+constexpr auto packed_copy_as_uint64(const Vec &v,
+                                     const std::index_sequence<I, J>) {
+    return shifted_uint64(v, std::index_sequence<I>{});
+    shifted_uint64(v, std::index_sequence<J>{});
 }
 template <class Vec, std::size_t I, std::size_t... Args>
-constexpr uint_fast64_t
-packed_copy_as_uint64(const Vec &v, const std::index_sequence<I, Args...>) {
-    return packed_copy_as_uint64<Vec, I>(v) +
+constexpr auto packed_copy_as_uint64(const Vec &v,
+                                     const std::index_sequence<I, Args...>) {
+    return shifted_uint64(v, std::index_sequence<I>{}) +
            packed_copy_as_uint64(v, std::index_sequence<Args...>{});
 }
 template <class OutInt, class Vec, std::size_t... Args>
