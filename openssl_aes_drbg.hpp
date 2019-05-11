@@ -84,6 +84,7 @@ public:
         key_.resize(keysize);
     } // }}}
     explicit KeyedCtrDRBG_AES() : KeyedCtrDRBG_AES(KeySize::AES128) {}
+    KeyedCtrDRBG_AES(const KeyedCtrDRBG_AES&) = delete;
     friend std::ostream &operator<<(std::ostream &o,
                                     const KeyedCtrDRBG_AES &x) { // {{{
         o << "[" << getName(x.size_) << ":" << tool::to_hex(x.key_) << "]";

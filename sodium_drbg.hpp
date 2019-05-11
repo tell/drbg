@@ -42,6 +42,7 @@ public:
     explicit KeyedCtrDRBG_Sodium(const key_t &key)
         : KeyedCtrDRBG_Sodium(key, {0}) {}
     explicit KeyedCtrDRBG_Sodium() : KeyedCtrDRBG_Sodium({0}) {}
+    KeyedCtrDRBG_Sodium(const KeyedCtrDRBG_Sodium&) = delete;
     friend std::ostream &operator<<(std::ostream &o,
                                     const KeyedCtrDRBG_Sodium &x) { // {{{
         constexpr size_t len = keybytes;
